@@ -1,0 +1,23 @@
+@import '../../styles/_variables';
+@import '../../styles/_mixins';
+
+.TodoListItem {
+    margin: 16px;
+    padding: 1em;
+    width: 100%;
+    border-radius: 8px;
+    color: $dark;
+    background-color: $orange;
+    border: 1px solid $green;
+}
+
+.TodoListItem__active {
+    background-color: $orange;
+    border: 1px solid $green;
+}
+
+.TodoListItem__checked {
+    background-color: $green;
+    border: 1px solid $orange;
+    text-decoration: line-through;
+}

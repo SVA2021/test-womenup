@@ -1,0 +1,53 @@
+@import './firtstNull';
+@import './fonts';
+@import './variables';
+@import './mixins';
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+	background-color: #fff;
+	font-size: $font-size;
+	font-family: $font-text;
+	scroll-behavior: smooth;
+	overflow-x: hidden;
+
+	//!!! uncomment code below to style specific scrollbar
+
+	// ::-webkit-scrollbar {
+	// 	width: 5px;
+	// }
+
+	// ::-webkit-scrollbar-track {
+	// 	border-radius: 5px;
+	// }
+
+	// ::-webkit-scrollbar-thumb {
+	// 	background-color: red;
+	// 	border-radius: 5px 0 0 5px;
+	// }
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+.container {
+	margin: 0 auto;
+	width: $mq-xs;
+
+	@include tablet {
+		width: $mq-sm;
+	}
+
+	@include desktop {
+		width: $mq-xl;
+	}
+
+}
