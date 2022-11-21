@@ -1,5 +1,5 @@
 import {initializeApp} from 'firebase/app';
-import {collection, Firestore, getDocs, getFirestore} from 'firebase/firestore/lite';
+import {getFirestore} from 'firebase/firestore';
 import {getStorage} from 'firebase/storage';
 
 const config = {
@@ -13,11 +13,4 @@ const config = {
 
 export const app = initializeApp(config);
 export const db = getFirestore(app);
-export const storage = getStorage(app);
-
-export async function getData(db: Firestore) {
-    const todosCol = collection(db, 'todos');
-    const todoSnapshot = await getDocs(todosCol);
-    const todoList = todoSnapshot.docs.map(doc => doc.data());
-    return todoList;
-}
+export const storage = getStorage();
