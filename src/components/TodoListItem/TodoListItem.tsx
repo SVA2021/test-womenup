@@ -19,7 +19,7 @@ export const TodoListItem: FC<TodoListItemProps> = ({item, checkHandler, editHan
     func();
   }
 
-  const isDateOver = new Date().getTime() < new Date(item.expired).getTime();
+  const isDateOver = new Date().getTime() > new Date(item.expired).getTime();
 
   return (
     <div
