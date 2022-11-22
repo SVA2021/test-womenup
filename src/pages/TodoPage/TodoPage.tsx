@@ -1,32 +1,49 @@
-import React, {FC, useRef, useState} from 'react';
-import {TodoList} from '../../components/TodoList';
+import {
+  collection, CollectionReference, deleteDoc, doc,
+  onSnapshot, query, updateDoc
+} from 'firebase/firestore';
+import {useEffect, useState} from 'react';
+import {TodoForm} from '../../components/TodoForm';
+import {TodoListItem} from '../../components/TodoListItem';
+import {TodoItem} from '../../components/TodoListItem/TodoListItem.type';
+import {db} from '../../firebase';
 import styles from './TodoPage.module.scss';
 
-export const TodoPage = () => {
-  const ref = useRef<HTMLInputElement | null>(null);
-  const [state, setState] = useState({
-    data: [{id: 0, isChecked: false, text: 'add tasks in input area'}],
-    counter: 0,
-  });
+const q = query(collection(db, 'todos') as CollectionReference<TodoItem>)
 
-  function checkTask(id: number) {
-    setState((v) => ({
-      ...v,
-      data: state.data.map((v) => ({...v, isChecked: v.id === id ? !v.isChecked : v.isChecked}))
+export const TodoPage = () => {
+
+  const [state, setState] = useState<TodoItem[]>([]);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [editedIten, setEditedItem] = useState<TodoItem | null>(null);
+
+  useEffect(() => {
+    onSnapshot<TodoItem>(q, (res) => {
+      const result: TodoItem[] = [];
+      res.docs.forEach((doc) => {
+        const item = doc.data()
+        result.push({...item, id: doc.id})
+      })
+      setState(result);
     })
-    )
+  }, [])
+
+  const checkTodo = (id: string, isChecked: boolean) => {
+    updateDoc(doc(db, 'todos', id), {isChecked: !isChecked})
   }
 
-  function addTask(task: string | undefined) {
-    if (!task) return false
-    if (ref.current?.value) ref.current.value = ''
+  const delTodo = (id: string) => {
+    deleteDoc(doc(collection(db, 'todos'), id))
+  }
 
-    setState((v) => ({
-      ...v,
-      counter: state.counter + 1,
-      data: [...state.data, {id: state.counter + 1, isChecked: false, text: task}],
-    })
-    )
+  const closeHandler = () => {
+    setEditedItem(null);
+    setIsOpen(false);
+  }
+
+  const editHandler = (item: TodoItem) => {
+    setEditedItem(item);
+    setIsOpen(true);
   }
 
   return (
@@ -34,11 +51,19 @@ export const TodoPage = () => {
       <header className={styles.TodoPage__header} >
         <h2>TodoList Header</h2>
       </header>
-      <div className={styles.TodoPage__inputarea}>
-        <input type="text" minLength={3} ref={ref} className={styles.TodoPage__input} />
-        <button onClick={() => addTask(ref.current?.value)} className={styles.TodoPage__btn}>add</button>
+      <button className={styles.TodoPage__btn} onClick={() => setIsOpen(true)} >add new task</button>
+      <div className="body">
+        {state.map((item) =>
+          <TodoListItem
+            key={item.id}
+            item={item}
+            checkHandler={() => checkTodo(item.id, item.isChecked)}
+            editHandler={() => editHandler(item)}
+            deleteHandler={() => delTodo(item.id)}
+          />,
+        )}
       </div>
-      <TodoList count={state.counter} data={state.data} onClick={checkTask} />
+      {isOpen && <TodoForm todo={editedIten} closeHandler={closeHandler} />}
     </section>
   )
 };

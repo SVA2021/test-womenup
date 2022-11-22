@@ -36,8 +36,10 @@
 }
 
 .TodoPage__btn {
-    margin: 16px;
+    display: block;
+    margin: 16px auto;
     padding: 1em 3em;
+    height: 4em;
     border-radius: 8px;
     color: $dark;
     border: 1px solid $dark;
@@ -48,6 +50,6 @@
 
     &:hover,
     &:focus {
-        background-color: $orange;
+        transform: scale(1.1);
     }
 }
