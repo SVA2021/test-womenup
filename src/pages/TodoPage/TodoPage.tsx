@@ -9,9 +9,13 @@ import {TodoItem} from '../../components/TodoListItem/TodoListItem.type';
 import {db} from '../../firebase';
 import styles from './TodoPage.module.scss';
 
-const q = query(collection(db, 'todos') as CollectionReference<TodoItem>)
+/**
+ * Main page of Todo list SPA
+ */
 
 export const TodoPage = () => {
+
+  const q = query(collection(db, 'todos') as CollectionReference<TodoItem>)
 
   const [state, setState] = useState<TodoItem[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);

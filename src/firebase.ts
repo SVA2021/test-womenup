@@ -1,7 +1,9 @@
 import {initializeApp} from 'firebase/app';
 import {getFirestore} from 'firebase/firestore';
 import {getStorage} from 'firebase/storage';
-
+/**
+ * base config and connections for firebase 
+ */
 const config = {
     apiKey: process.env.REACT_APP_APIKEY,
     authDomain: process.env.REACT_APP_AUTHDOMAIN,
