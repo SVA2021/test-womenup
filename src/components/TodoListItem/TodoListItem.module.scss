@@ -1,23 +1,63 @@
 @import '../../styles/_variables';
 @import '../../styles/_mixins';
 
-.TodoListItem {
-    margin: 16px;
+.TodoItem {
+    margin: 16px auto;
     padding: 1em;
     width: 100%;
+    max-width: 700px;
     border-radius: 8px;
     color: $dark;
     background-color: $orange;
     border: 1px solid $green;
 }
 
-.TodoListItem__active {
+.TodoItem__active {
     background-color: $orange;
     border: 1px solid $green;
 }
 
-.TodoListItem__checked {
+.TodoItem__checked {
     background-color: $green;
     border: 1px solid $orange;
     text-decoration: line-through;
+}
+
+.TodoItem__header {
+    margin-bottom: 1em;
+    font-size: 1.5em;
+}
+
+.TodoItem__link {
+    margin: 1em;
+    padding: 0.5em;
+    color: $orange;
+    background-color: $dark;
+}
+
+.TodoItem__description {
+    margin: 1em 0;
+}
+
+.TodoItem__buttons {
+    margin: 1em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    button {
+        margin: 1em;
+        padding: 1em;
+        display: block;
+        color: $orange;
+        background-color: $dark;
+        border: 1px solid $light;
+        border-radius: 8px;
+        text-transform: uppercase;
+        text-decoration: none !important;
+
+        &:hover {
+            background-color: $light;
+        }
+    }
 }

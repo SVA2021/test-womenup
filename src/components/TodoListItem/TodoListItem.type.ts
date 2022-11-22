@@ -1,10 +1,19 @@
 export interface TodoListItemProps {
-    item: TodoListItem
-    onClick: () => void
- }
+   item: TodoItem
+   checkHandler: () => void
+   editHandler: () => void
+   deleteHandler: () => void
+}
 
- export interface TodoListItem {
-    id: number
-    isChecked: boolean
-    text: string
- }
+export type TimeStamp = {
+   seconds: number
+   nanoseconds: number
+}
+export interface TodoItem {
+   id: string
+   title: string
+   description: string
+   expired: string
+   filePath: string | null
+   isChecked: boolean
+}
