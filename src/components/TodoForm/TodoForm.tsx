@@ -1,5 +1,4 @@
-import dayjs from 'dayjs';
-import {addDoc, collection, serverTimestamp} from 'firebase/firestore';
+import {addDoc, collection, doc, serverTimestamp, updateDoc} from 'firebase/firestore';
 import {getDownloadURL, ref, uploadBytes} from 'firebase/storage';
 import React, {FC, useState} from 'react';
 import {db, storage} from '../../firebase';
@@ -10,7 +9,7 @@ export const TodoForm: FC<TodoFormProps> = ({todo, closeHandler}) => {
 
   const [title, setTitle] = useState<string>(todo?.title ?? '');
   const [description, setDescription] = useState<string>(todo?.description ?? '');
-  const [expired, setExpired] = useState<string>(dayjs(todo?.expired).format('YYYY--MM-DD') ?? '');
+  const [expired, setExpired] = useState<string>(todo?.expired ?? '');
   const [filePath, setFilePath] = useState<string | null>(todo?.filePath ?? null);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,16 +49,27 @@ export const TodoForm: FC<TodoFormProps> = ({todo, closeHandler}) => {
     setError(checkError());
     if (error) return false;
 
-    addDoc(collection(db, 'todos'), {
-      id: serverTimestamp(),
-      title,
-      description,
-      expired: new Date(expired),
-      filePath,
-      isChecked: false,
-    })
-      .then(() => closeOnSubmit())
-      .catch((error) => setError(error));
+    if (todo === null) {
+      addDoc(collection(db, 'todos'), {
+        id: serverTimestamp(),
+        title,
+        description,
+        expired,
+        filePath,
+        isChecked: false,
+      })
+        .then(() => closeOnSubmit())
+        .catch((error) => setError(error));
+    } else {
+      updateDoc(doc(db, 'todos', todo.id), {
+        title,
+        description,
+        expired,
+        filePath,
+      })
+        .then(() => closeOnSubmit())
+        .catch((error) => setError(error));
+    }
   }
 
   return (
