@@ -5,6 +5,13 @@ import {db, storage} from '../../firebase';
 import styles from './TodoForm.module.scss';
 import {TodoFormProps} from './TodoForm.type';
 
+/**
+ * Form component for editing or creating new todo task
+ * @param todo: TodoItem | null, define edited item of todotask, or new if null 
+ * @param closeHandler: void, callback for actions at closing form 
+ * @returns JSX component
+ */
+
 export const TodoForm: FC<TodoFormProps> = ({todo, closeHandler}) => {
 
   const [title, setTitle] = useState<string>(todo?.title ?? '');
@@ -12,6 +19,8 @@ export const TodoForm: FC<TodoFormProps> = ({todo, closeHandler}) => {
   const [expired, setExpired] = useState<string>(todo?.expired ?? '');
   const [filePath, setFilePath] = useState<string | null>(todo?.filePath ?? null);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
 
   function closeOnSubmit() {
     setTitle('');
@@ -19,6 +28,7 @@ export const TodoForm: FC<TodoFormProps> = ({todo, closeHandler}) => {
     setExpired('');
     setFilePath('');
     setError(null);
+    setIsLoading(false);
     closeHandler();
   }
 
@@ -34,14 +44,22 @@ export const TodoForm: FC<TodoFormProps> = ({todo, closeHandler}) => {
     const storageRef = ref(storage, newFile.name);
     uploadBytes(storageRef, newFile)
       .then((snapshot) => {
+        setIsLoading(true);
         getDownloadURL(snapshot.ref)
           .then((link) => {
             setError(null)
             setFilePath(link)
+            setIsLoading(false);
           })
-          .catch((error) => setError(error));
+          .catch((error) => {
+            setError(error)
+            setIsLoading(false);
+          });
       })
-      .catch((error) => setError(error));
+      .catch((error) => {
+        setError(error)
+        setIsLoading(false);
+      });
   }
 
   function onFormSubmit(event: React.ChangeEvent<HTMLFormElement>) {
@@ -50,6 +68,7 @@ export const TodoForm: FC<TodoFormProps> = ({todo, closeHandler}) => {
     if (error) return false;
 
     if (todo === null) {
+      setIsLoading(true);
       addDoc(collection(db, 'todos'), {
         id: serverTimestamp(),
         title,
@@ -59,7 +78,10 @@ export const TodoForm: FC<TodoFormProps> = ({todo, closeHandler}) => {
         isChecked: false,
       })
         .then(() => closeOnSubmit())
-        .catch((error) => setError(error));
+        .catch((error) => {
+          setError(error)
+          setIsLoading(false);
+        });
     } else {
       updateDoc(doc(db, 'todos', todo.id), {
         title,
@@ -68,13 +90,16 @@ export const TodoForm: FC<TodoFormProps> = ({todo, closeHandler}) => {
         filePath,
       })
         .then(() => closeOnSubmit())
-        .catch((error) => setError(error));
+        .catch((error) => {
+          setError(error)
+          setIsLoading(false);
+        });
     }
   }
 
   return (
     <div className={styles.TodoForm}>
-      <form onSubmit={onFormSubmit} className={styles.TodoForm__body} >
+      <form onSubmit={onFormSubmit} className={styles.TodoForm__body} style={{opacity: isLoading ? 0.5 : 1}} >
         <label className={styles.TodoForm__field}>
           Title
           <input type="text" name="title"
@@ -103,7 +128,7 @@ export const TodoForm: FC<TodoFormProps> = ({todo, closeHandler}) => {
         {!error && <p>{error}</p>}
         <input type="submit" value="Submit" className={styles.TodoForm__submit} />
       </form>
-      <button className={styles.TodoForm__close} onClick={closeOnSubmit}>close</button>
+      <button disabled={isLoading} className={styles.TodoForm__close} onClick={closeOnSubmit}>close</button>
     </div>
   );
 };
